@@ -13,6 +13,7 @@ import MBProgressHUD
 
 class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
+    @IBOutlet weak var errorLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     var movies: [NSDictionary]?
     var endpoint: String!
@@ -49,6 +50,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let task: NSURLSessionDataTask = session.dataTaskWithRequest(request,
                                                 completionHandler: { (dataOrNil, response, error) in
                                                                         MBProgressHUD.hideHUDForView(self.view, animated: true)
+                                                                        self.toggleErrorLabel(error)
 
                                                                         if let data = dataOrNil {
                                                                             if let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(
@@ -83,7 +85,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let task: NSURLSessionDataTask = session.dataTaskWithRequest(request,
                                                                      completionHandler: { (dataOrNil, response, error) in
                                                                         MBProgressHUD.hideHUDForView(self.view, animated: true)
-                                                                        
+                                                                        self.toggleErrorLabel(error)
                                                                         if let data = dataOrNil {
                                                                             if let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(
                                                                                 data, options:[]) as? NSDictionary {
@@ -101,6 +103,15 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
 
     }
 
+    func toggleErrorLabel(error: NSError?) {
+        if ((error?.code) != nil) {
+            self.errorLabel.hidden = false
+            print("error: \(error.debugDescription)")
+        } else {
+            self.errorLabel.hidden = true
+        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
